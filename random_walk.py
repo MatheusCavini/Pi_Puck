@@ -26,6 +26,10 @@ def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
         msg = data
+        if msg.ID == 2:
+            print("Robot 2 is on the arena")
+        else:
+            print("Unable to get robot 2 position")
     except json.JSONDecodeError:
         print(f'invalid json: {msg.payload}')
         msg = None
@@ -50,12 +54,7 @@ Y_lower = 0.1
 Y_upper = 0.9
 
 # Get info from the robot
-for _ in range(10):
-    if msg.ID == 2:
-        print("Robot 2 is on the arena")
-    else:
-        print("Unable to get robot 2 position")
-    time.sleep(1)
+
 	
     
 # Stop the MQTT client loop
