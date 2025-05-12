@@ -4,7 +4,7 @@ import time
 from pipuck.pipuck import PiPuck
 from random import randint
 
-MY_ID = 33
+MY_ID = 2
 
 # Define variables and callbacks
 Broker = "192.168.178.56"  # Replace with your broker address
@@ -26,10 +26,10 @@ def on_message(client, userdata, msg):
     try:
         data = json.loads(msg.payload.decode())
         msg = data
-        if msg.ID == 2:
-            print("Robot 2 is on the arena")
+        if msg[MY_ID] != None:
+            print(f"Robot {MY_ID} is on the arena")
         else:
-            print("Unable to get robot 2 position")
+            print(f"Unable to get robot {MY_ID} position")
     except json.JSONDecodeError:
         print(f'invalid json: {msg.payload}')
         msg = None
