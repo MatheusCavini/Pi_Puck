@@ -54,7 +54,8 @@ Y_lower = 0.1
 Y_upper = 0.9
 
 # Get info from the robot
-
+for _ in range(10):
+    time.sleep(1)
 	
     
 # Stop the MQTT client loop
