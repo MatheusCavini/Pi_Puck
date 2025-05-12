@@ -11,9 +11,9 @@ Port = 1883 # standard MQTT port
 
 # Variable to save the message
 msg = None
-global X_pos
-global Y_pos
-
+X_pos = None
+Y_pos = None
+msg = None
 
 # function to handle connection
 def on_connect(client, userdata, flags, rc):
@@ -21,24 +21,23 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("robot_pos/all")
 
 # function to handle incoming messages
-def on_message(client, userdata, msg):
-    global X_pos
-    global Y_pos
-    global MY_ID
+def on_message(client, userdata, message):
+    global msg, X_pos, Y_pos
     try:
-        data = json.loads(msg.payload.decode())
+        data = json.loads(message.payload.decode())
         msg = data
-        if msg[MY_ID] != None:
+        if MY_ID in msg and msg[MY_ID] is not None:
             print(f"Robot {MY_ID} is on the arena")
             X_pos = msg[MY_ID]['position'][0]
             Y_pos = msg[MY_ID]['position'][1]
         else:
             print(f"Unable to get robot {MY_ID} position")
     except json.JSONDecodeError:
-        print(f'invalid json: {msg.payload}')
+        print(f"Invalid JSON: {message.payload.decode()}")
         msg = None
         X_pos = None
         Y_pos = None
+
 
 # Initialize MQTT client
 client = mqtt.Client()
