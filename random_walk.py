@@ -56,10 +56,17 @@ X_upper = 1.9
 Y_lower = 0.1
 Y_upper = 0.9
 
-# Get info from the robot
+# Random walk logic
 for _ in range(10):
-    print(f"Robot {MY_ID} is on X: {X_pos} Y: {Y_pos}")
-    time.sleep(1)
+    time_before_change = randint(1, 10)
+    pipuck.epuck.set_motor_speeds(500, 500)
+    time.sleep(time_before_change)
+    pipuck.epuck.set_motor_speeds(0, 0)
+    # Randomly change direction
+    time_rotating = randint(1,5)
+    pipuck.epuck.set_motor_speeds(250, -250)
+    time.sleep(time_rotating)
+    pipuck.epuck.set_motor_speeds(0, 0)
 	
     
 # Stop the MQTT client loop
