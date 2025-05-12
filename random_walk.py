@@ -4,7 +4,7 @@ import time
 from pipuck.pipuck import PiPuck
 from random import randint
 
-MY_ID = "33"
+MY_ID = "2"
 
 # Define variables and callbacks
 Broker = "192.168.178.56"  # Replace with your broker address
@@ -28,6 +28,8 @@ def on_message(client, userdata, msg):
         msg = data
         if msg[MY_ID] != None:
             print(f"Robot {MY_ID} is on the arena")
+            X_pos = (msg[MY_ID]['position'])[0]
+            Y_pos = (msg[MY_ID]['position'])[1]
         else:
             print(f"Unable to get robot {MY_ID} position")
     except json.JSONDecodeError:
@@ -55,6 +57,7 @@ Y_upper = 0.9
 
 # Get info from the robot
 for _ in range(10):
+    print(f"Robot {MY_ID} is on X: {X_pos} Y: {Y_pos}")
     time.sleep(1)
 	
     
