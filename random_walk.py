@@ -3,7 +3,6 @@ import json
 import time
 from pipuck.pipuck import PiPuck
 from random import randint
-
 MY_ID = "2"
 
 # Define variables and callbacks
@@ -12,8 +11,8 @@ Port = 1883 # standard MQTT port
 
 # Variable to save the message
 msg = None
-X_pos = None
-Y_pos = None
+global X_pos
+global Y_pos
 
 
 # function to handle connection
@@ -23,13 +22,16 @@ def on_connect(client, userdata, flags, rc):
 
 # function to handle incoming messages
 def on_message(client, userdata, msg):
+    global X_pos
+    global Y_pos
+    global MY_ID
     try:
         data = json.loads(msg.payload.decode())
         msg = data
         if msg[MY_ID] != None:
             print(f"Robot {MY_ID} is on the arena")
-            X_pos = (msg[MY_ID]['position'])[0]
-            Y_pos = (msg[MY_ID]['position'])[1]
+            X_pos = msg[MY_ID]['position'][0]
+            Y_pos = msg[MY_ID]['position'][1]
         else:
             print(f"Unable to get robot {MY_ID} position")
     except json.JSONDecodeError:
