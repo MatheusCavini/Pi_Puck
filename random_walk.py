@@ -78,7 +78,6 @@ def steer(amount, speed):
         else:
             pipuck.epuck.set_motor_speeds(-speed, speed)
         time.sleep(0.1)
-        print(f"Target: {target_angle}, Current: {angle}")
     stop()
 
 def is_out_of_bounds():
@@ -124,12 +123,12 @@ for _ in range(10): # 10 iterations of random walk
 
         # Check if robot is in bo
         if is_out_of_bounds() or is_close_to_other_robots():
-            steer(180, 250)
+            steer(randint(-180,180), 250)
             drive_forward(500)
             time.sleep(2)
 
 
-    angle_to_steer = randint(-130,130)
+    angle_to_steer = randint(-180,180)
     steer(angle_to_steer, 250)
 	
     
