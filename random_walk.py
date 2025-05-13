@@ -70,12 +70,13 @@ def steer(amount, speed):
     stop()
     current_angle = angle
     target_angle = (current_angle + amount) % 360
-    while abs(current_angle - target_angle) > 10: #10 deg tolerance for steering
+    while abs(angle - target_angle) > 10: #10 deg tolerance for steering
         if amount > 0:
             pipuck.epuck.set_motor_speeds(speed, -speed)
         else:
             pipuck.epuck.set_motor_speeds(-speed, speed)
         time.sleep(0.1)
+        print(f"Target: {target_angle}, Current: {angle}")
     stop()
 
 def is_out_of_bounds(x, y):
@@ -106,7 +107,7 @@ for _ in range(10): # 10 iterations of random walk
             i = 0
             drive_forward(500)
 
-    angle_to_steer = randint(-180,180)
+    angle_to_steer = randint(-130,130)
     steer(angle_to_steer, 250)
 	
     
