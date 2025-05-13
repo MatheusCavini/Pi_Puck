@@ -104,8 +104,9 @@ for _ in range(10): # 10 iterations of random walk
         if is_out_of_bounds(X_pos, Y_pos):
             print(f"Robot {MY_ID} is getting out of bounds! X: {X_pos}, Y: {Y_pos}")
             steer(180, 250)
-            i = 0
             drive_forward(500)
+            time.sleep(2)
+
 
     angle_to_steer = randint(-130,130)
     steer(angle_to_steer, 250)
