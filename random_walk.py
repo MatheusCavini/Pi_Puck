@@ -9,11 +9,11 @@ MY_ID = "33"
 Broker = "192.168.178.56"  # Replace with your broker address
 Port = 1883 # standard MQTT port
 
-# Variable to save the message
+# Variable to save the position message
 msg = None
 X_pos = None
 Y_pos = None
-msg = None
+orientation = None
 
 # function to handle connection
 def on_connect(client, userdata, flags, rc):
@@ -22,16 +22,18 @@ def on_connect(client, userdata, flags, rc):
 
 # function to handle incoming messages
 def on_message(client, userdata, message):
-    global msg, X_pos, Y_pos
+    global msg, X_pos, Y_pos, orientation
     try:
         data = json.loads(message.payload.decode())
         msg = data
         if MY_ID in msg and msg[MY_ID] is not None:
             X_pos = msg[MY_ID]['position'][0]
             Y_pos = msg[MY_ID]['position'][1]
+            orientation = msg[MY_ID]['orientation']
         else:
             X_pos = None
             Y_pos = None
+            orientation = None
     except json.JSONDecodeError:
         print(f"Invalid JSON: {message.payload.decode()}")
         msg = None
@@ -50,18 +52,29 @@ client.loop_start() # Start listening loop in separate thread
 # Initialize the PiPuck
 pipuck = PiPuck(epuck_version=2)
 
+
+## Define the arena boundaries
 X_lower = 0.1
 X_upper = 1.9
 Y_lower = 0.1
 Y_upper = 0.9
 
-# Random walk logic
+def stop():
+    pipuck.epuck.set_motor_speeds(0,0)
 
+def drive_forward(speed):
+    pipuck.epuck.set_motor_speeds(speed, speed)
+
+# Wai until the robot is in the arena
 while X_pos is None or Y_pos is None:
+    stop()
     print(f"Robot {MY_ID} is not in arena...")
     time.sleep(1)
 
 print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
+
+
+
 
 def change_direction():
     # Randomly change direction
