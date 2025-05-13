@@ -150,8 +150,8 @@ for _ in range(10): # 10 iterations of random walk
 
         # Check if robot is getting out of bounds or too close to other robots
         if is_out_of_bounds() or is_close_to_other_robots():
-            steer(randint(120,240), 250)
-            drive_forward(500)
+            steer(randint(150,210), 250)
+            drive_forward(700)
             time.sleep(2)
 
         if i%2 == 0:
