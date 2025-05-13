@@ -15,12 +15,21 @@ X_pos = None
 Y_pos = None
 angle = None
 
+
+
 # function to handle connection
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe("robot_pos/all")
     client.subscribe(f"robot/{MY_ID}")  # Subscribe to the robot's own topic
     
+def blink_3_times(color):
+    for i in range(3):
+        pipuck.set_leds_colour(color)
+        time.sleep(0.05)
+        pipuck.set_leds_colour("off")
+        time.sleep(0.05)
+    pipuck.set_leds_colour("off")
 
 # function to handle incoming messages
 def on_message(client, userdata, message):
@@ -28,11 +37,8 @@ def on_message(client, userdata, message):
     try:
         if message.topic == f"robot/{MY_ID}":
             print(f"Message received on {message.topic}: {message.payload.decode()}")
-            for i in range(3):
-                pipuck.set_leds_colour("cyan")
-                time.sleep(0.05)
-                pipuck.set_leds_colour("off")
-                time.sleep(0.05)
+            blink_3_times("cyan")
+            
             
         elif message.topic == "robot_pos/all":
             data = json.loads(message.payload.decode())
@@ -136,13 +142,13 @@ for _ in range(10): # 10 iterations of random walk
 
     # Get a random time to wait before changing direction
     time_before_change = randint(1, 10)
-    drive_forward(500)
+    drive_forward(700)
 
     # While is driving forward, check for bounds and colision every 0.5 seconds
     for i in range(time_before_change * 2):
         time.sleep(0.5) #check position every 0.5 seconds
 
-        # Check if robot is in bo
+        # Check if robot is getting out of bounds or too close to other robots
         if is_out_of_bounds() or is_close_to_other_robots():
             steer(randint(120,240), 250)
             drive_forward(500)
