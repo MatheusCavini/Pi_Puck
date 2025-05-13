@@ -69,10 +69,17 @@ def steer(amount, speed):
     global angle
     stop()
     current_angle = angle
-    while (angle - current_angle) < amount:
-        pipuck.epuck.set_motor_speeds(speed, -speed)
+    target_angle = (current_angle + amount) % 360
+    while abs(current_angle - target_angle) > 10: #10 deg tolerance for steering
+        if amount > 0:
+            pipuck.epuck.set_motor_speeds(speed, -speed)
+        else:
+            pipuck.epuck.set_motor_speeds(-speed, speed)
         time.sleep(0.1)
     stop()
+
+def is_out_of_bounds(x, y):
+    return x < X_lower or x > X_upper or y < Y_lower or y > Y_upper
     
     
 
@@ -87,16 +94,20 @@ while X_pos is None or Y_pos is None:
 print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
 
 
-
-for _ in range(10):
+# Main Loop: random walk logic
+for _ in range(10): # 10 iterations of random walk
     time_before_change = randint(1, 10)
     drive_forward(500)
     for i in range(time_before_change * 2):
         time.sleep(0.5) #check position every 0.5 seconds
-        if X_pos < X_lower or X_pos > X_upper or Y_pos < Y_lower or Y_pos > Y_upper:
+        if is_out_of_bounds(X_pos, Y_pos):
             print(f"Robot {MY_ID} is getting out of bounds! X: {X_pos}, Y: {Y_pos}")
-            break
-    steer(90, 250)
+            steer(180, 250)
+            i = 0
+            drive_forward(500)
+
+    angle_to_steer = randint(-180,180)
+    steer(angle_to_steer, 250)
 	
     
 # Stop the MQTT client loop
