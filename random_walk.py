@@ -19,21 +19,26 @@ angle = None
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
     client.subscribe("robot_pos/all")
+    client.subscribe(f"robot/{MY_ID}")  # Subscribe to the robot's own topic
+    
 
 # function to handle incoming messages
 def on_message(client, userdata, message):
     global msg, X_pos, Y_pos, angle
     try:
-        data = json.loads(message.payload.decode())
-        msg = data
-        if MY_ID in msg and msg[MY_ID] is not None:
-            X_pos = msg[MY_ID]['position'][0]
-            Y_pos = msg[MY_ID]['position'][1]
-            angle = msg[MY_ID]['angle']
-        else:
-            X_pos = None
-            Y_pos = None
-            angle = None
+        if message.topic == f"robot/{MY_ID}":
+            print(f"Message received on {message.topic}: {message.payload.decode()}")
+        elif message.topic == "robot_pos/all":
+            data = json.loads(message.payload.decode())
+            msg = data
+            if MY_ID in msg and msg[MY_ID] is not None:
+                X_pos = msg[MY_ID]['position'][0]
+                Y_pos = msg[MY_ID]['position'][1]
+                angle = msg[MY_ID]['angle']
+            else:
+                X_pos = None
+                Y_pos = None
+                angle = None
     except json.JSONDecodeError:
         print(f"Invalid JSON: {message.payload.decode()}")
         msg = None
@@ -114,7 +119,7 @@ def send_hello_to_near_robots():
 # Wai until the robot is in the arena
 while X_pos is None or Y_pos is None:
     stop()
-    print(f"Robot {MY_ID} is not in arena...")
+    client.publish(f"robot/{MY_ID}", f"Robot {MY_ID} is not in arena...")
     time.sleep(1)
 
 print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
@@ -137,7 +142,8 @@ for _ in range(10): # 10 iterations of random walk
             drive_forward(500)
             time.sleep(2)
 
-        send_hello_to_near_robots()
+        if i%2 == 0:
+            send_hello_to_near_robots()
 
 
     angle_to_steer = randint(-180,180)
