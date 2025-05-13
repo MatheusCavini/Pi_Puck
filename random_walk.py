@@ -3,7 +3,7 @@ import json
 import time
 from pipuck.pipuck import PiPuck
 from random import randint
-MY_ID = "33"
+MY_ID = "18"
 
 # Define variables and callbacks
 Broker = "192.168.178.56"  # Replace with your broker address
@@ -66,9 +66,10 @@ def drive_forward(speed):
     pipuck.epuck.set_motor_speeds(speed, speed)
 
 def steer(amount, speed):
+    global angle
     stop()
     current_angle = angle
-    while (angle -current_angle) < amount:
+    while (angle - current_angle) < amount:
         pipuck.epuck.set_motor_speeds(speed, -speed)
         time.sleep(0.1)
     stop()
@@ -86,15 +87,6 @@ while X_pos is None or Y_pos is None:
 print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
 
 
-
-
-def change_direction():
-    # Randomly change direction
-    pipuck.epuck.set_motor_speeds(0, 0)
-    time_rotating = randint(1,5)
-    pipuck.epuck.set_motor_speeds(250, -250)
-    time.sleep(time_rotating)
-    pipuck.epuck.set_motor_speeds(0, 0)
 
 for _ in range(10):
     time_before_change = randint(1, 10)
