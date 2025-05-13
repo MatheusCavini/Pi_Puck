@@ -83,7 +83,7 @@ def steer(amount, speed):
 def is_out_of_bounds():
     global X_pos, Y_pos
     if X_pos < X_lower or X_pos > X_upper or Y_pos < Y_lower or Y_pos > Y_upper:
-        print(f"Robot {MY_ID} is getting out of bounds! X: {X_pos}, Y: {Y_pos}")
+        print(f"Robot {MY_ID} is getting out of bounds!")
         return True
     return False
     
@@ -99,6 +99,16 @@ def is_close_to_other_robots():
                 return True
     return False
 
+def send_hello_to_near_robots():
+    global msg
+    for robot_id in msg:
+        if robot_id != MY_ID and msg[robot_id] is not None:
+            robot_x = msg[robot_id]['position'][0]
+            robot_y = msg[robot_id]['position'][1]
+            distance = ((X_pos - robot_x) ** 2 + (Y_pos - robot_y) ** 2) ** 0.5
+            if distance < 0.30:
+                print(f"Sending hello to robot {robot_id}!")
+                client.publish("robot/" + robot_id, f"Hello from robot {MY_ID}!")
     
 
 # Wai until the robot is in the arena
@@ -123,9 +133,11 @@ for _ in range(10): # 10 iterations of random walk
 
         # Check if robot is in bo
         if is_out_of_bounds() or is_close_to_other_robots():
-            steer(randint(-180,180), 250)
+            steer(randint(120,240), 250)
             drive_forward(500)
             time.sleep(2)
+
+        send_hello_to_near_robots()
 
 
     angle_to_steer = randint(-180,180)
