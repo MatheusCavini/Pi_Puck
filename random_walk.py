@@ -65,6 +65,8 @@ def stop():
 def drive_forward(speed):
     pipuck.epuck.set_motor_speeds(speed, speed)
 
+
+
 def steer(amount, speed):
     global angle
     stop()
@@ -79,10 +81,24 @@ def steer(amount, speed):
         print(f"Target: {target_angle}, Current: {angle}")
     stop()
 
-def is_out_of_bounds(x, y):
-    return x < X_lower or x > X_upper or y < Y_lower or y > Y_upper
+def is_out_of_bounds():
+    global X_pos, Y_pos
+    if X_pos < X_lower or X_pos > X_upper or Y_pos < Y_lower or Y_pos > Y_upper:
+        print(f"Robot {MY_ID} is getting out of bounds! X: {X_pos}, Y: {Y_pos}")
+        return True
+    return False
     
-    
+def is_close_to_other_robots():
+    global msg, X_pos, Y_pos
+    for robot_id in msg:
+        if robot_id != MY_ID and msg[robot_id] is not None:
+            robot_x = msg[robot_id]['position'][0]
+            robot_y = msg[robot_id]['position'][1]
+            distance = ((X_pos - robot_x) ** 2 + (Y_pos - robot_y) ** 2) ** 0.5
+            if distance < 0.15:
+                print(f"Robot {MY_ID} is too close to robot {robot_id}!")
+                return True
+    return False
 
     
 
@@ -97,12 +113,17 @@ print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
 
 # Main Loop: random walk logic
 for _ in range(10): # 10 iterations of random walk
+
+    # Get a random time to wait before changing direction
     time_before_change = randint(1, 10)
     drive_forward(500)
+
+    # While is driving forward, check for bounds and colision every 0.5 seconds
     for i in range(time_before_change * 2):
         time.sleep(0.5) #check position every 0.5 seconds
-        if is_out_of_bounds(X_pos, Y_pos):
-            print(f"Robot {MY_ID} is getting out of bounds! X: {X_pos}, Y: {Y_pos}")
+
+        # Check if robot is in bo
+        if is_out_of_bounds() or is_close_to_other_robots():
             steer(180, 250)
             drive_forward(500)
             time.sleep(2)
