@@ -4,7 +4,7 @@ import time
 from pipuck.pipuck import PiPuck
 from random import randint
 
-MY_ID = "18"
+MY_ID = "39"
 
 # Define variables and callbacks
 Broker = "192.168.178.56"  # Replace with your broker address
