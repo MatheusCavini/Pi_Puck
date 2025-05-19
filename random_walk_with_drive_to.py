@@ -3,8 +3,9 @@ import json
 import time
 from pipuck.pipuck import PiPuck
 from random import randint
+import math
 
-MY_ID = "18"
+MY_ID = "39"
 
 # Define variables and callbacks
 Broker = "192.168.178.56"  # Replace with your broker address
@@ -127,7 +128,20 @@ def send_hello_to_near_robots():
             if distance < 0.30:
                 print(f"Sending hello to robot {robot_id}!")
                 client.publish("robot/" + robot_id, f"Hello from robot {MY_ID}!")
-    
+
+def drive_from_to(x_from, y_from, rot_from, x_to, y_to, rot_to):
+    global X_pos, Y_pos, angle
+    dX = x_to - x_from
+    dY = y_to - y_from
+
+    heading_angle = math.atan2(dY, dX) * 180 / math.pi 
+    d_Theta = heading_angle - rot_from
+    steer(d_Theta, 250)
+    while(abs(X_pos - x_to) > 0.05 or abs(Y_pos - y_to) > 0.05):
+        drive_forward(500)
+        if is_out_of_bounds() or is_close_to_other_robots():
+            break
+        time.sleep(0.1)    
 
 # Wai until the robot is in the arena
 while X_pos is None or Y_pos is None:
@@ -141,27 +155,11 @@ print(f"Robot {MY_ID} is in arena! X: {X_pos}, Y: {Y_pos}")
 # Main Loop: random walk logic
 for _ in range(10): # 10 iterations of random walk
 
-    # Get a random time to wait before changing direction
-    time_before_change = randint(1, 10)
-    drive_forward(700)
-
-    # While is driving forward, check for bounds and colision every 0.5 seconds
-    for i in range(time_before_change * 2):
-        time.sleep(0.5) #check position every 0.5 seconds
-
-        # Check if robot is getting out of bounds or too close to other robots
-        if is_out_of_bounds() or is_close_to_other_robots():
-            steer(randint(150,210), 250)
-            drive_forward(700)
-            time.sleep(2)
-
-        if i%2 == 0:
-            send_hello_to_near_robots()
-
-
-    angle_to_steer = randint(-180,180)
-    steer(angle_to_steer, 250)
-	
+    # Get a random position to go inside arena boundaries
+    x_to = randint(int(X_lower*100), int(X_upper*100)) / 100
+    y_to = randint(int(Y_lower*100), int(Y_upper*100)) / 100
+    print(f"Driving to ({x_to}m, {y_to}m)")
+    drive_from_to(X_pos, Y_pos, angle, x_to, y_to, angle)
     
 # Stop the MQTT client loop
 pipuck.epuck.set_motor_speeds(0,0)
