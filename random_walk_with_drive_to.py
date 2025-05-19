@@ -160,6 +160,7 @@ for _ in range(10): # 10 iterations of random walk
     y_to = randint(int(Y_lower*100), int(Y_upper*100)) / 100
     print(f"Driving to ({x_to}m, {y_to}m)")
     drive_from_to(X_pos, Y_pos, angle, x_to, y_to, angle)
+    time.sleep(2)
     
 # Stop the MQTT client loop
 pipuck.epuck.set_motor_speeds(0,0)
