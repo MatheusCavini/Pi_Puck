@@ -134,7 +134,8 @@ def drive_from_to(x_from, y_from, rot_from, x_to, y_to, rot_to):
     dX = x_to - x_from
     dY = y_to - y_from
 
-    heading_angle = math.atan2(dY, dX) * 180 / math.pi 
+    heading_angle = math.atan2(dX, dY) * 180 / math.pi 
+    heading_angle = (heading_angle + 360) % 360
     d_Theta = heading_angle - rot_from
     steer(d_Theta, 250)
     while(abs(X_pos - x_to) > 0.10 or abs(Y_pos - y_to) > 0.10):
