@@ -166,7 +166,7 @@ def on_message(client, userdata, message):
     try:
         if message.topic == f"robot/{MY_ID}":
             print(f"Message received on {message.topic}: {message.payload.decode()}")
-        
+            blink_3_times("cyan")
             
             
         elif message.topic == "robot_pos/all":
@@ -201,6 +201,13 @@ pipuck = PiPuck(epuck_version=2)
 ##================== MAIN LOOP ===================##
 CATCHED_FLAG = False
 
+# Wai until the robot is in the arena
+while MY_X is None or MY_Y is None:
+    stop()
+    client.publish(f"robot/{MY_ID}", f"Robot {MY_ID} is not in arena...")
+    time.sleep(1)
+
+print(f"Robot {MY_ID} is in arena! X: {MY_X}, Y: {MY_Y}")
 
 while True:
     # Changes behavior according to the role
