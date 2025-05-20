@@ -128,7 +128,7 @@ def drive_to(x_to, y_to, rot_to):
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
     kp = 100
-    kh = 1
+    kh = 3
     dX = x_to - MY_X
     dY = y_to - MY_Y
     heading_angle = math.atan2(dX, dY) * 180 / math.pi
@@ -244,6 +244,7 @@ while True:
             while distance > 0.15:
                 dt = 0.1
                 distance = control_to(runner_x, runner_y, dt)
+                print(f"Chaser {MY_ID} is moving towards the runner. Distance: {distance:.2f}")
                 time.sleep(dt)
 
                 
