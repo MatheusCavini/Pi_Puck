@@ -127,8 +127,8 @@ def drive_to(x_to, y_to, rot_to):
 # Use proportional control to get to a target point
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
-    kp = 300
-    kh = 10
+    kp = 100
+    kh = 1
     dX = x_to - MY_X
     dY = y_to - MY_Y
     heading_angle = math.atan2(dX, dY) * 180 / math.pi
