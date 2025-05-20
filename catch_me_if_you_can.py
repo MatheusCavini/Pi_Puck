@@ -241,7 +241,7 @@ while True:
             
             # Check if the chaser is close to the runner
             distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
-            while distance > 0.15:
+            while distance > 0.20:
                 dt = 0.1
                 distance, d_Theta = control_to(runner_x, runner_y, dt)
                 print(f"Chaser {MY_ID} is moving towards the runner. Distance: {distance:.2f}; Deviation: {d_Theta:.2f}º")
