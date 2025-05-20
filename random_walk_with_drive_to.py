@@ -91,7 +91,7 @@ def steer(amount, speed):
     stop()
     current_angle = angle
     target_angle = (current_angle + amount) % 360
-    while abs(angle - target_angle) > 10: #10 deg tolerance for steering
+    while abs(angle - target_angle) > 5: #5 deg tolerance for steering
         if amount > 0:
             pipuck.epuck.set_motor_speeds(speed, -speed)
         else:
@@ -129,17 +129,19 @@ def send_hello_to_near_robots():
                 print(f"Sending hello to robot {robot_id}!")
                 client.publish("robot/" + robot_id, f"Hello from robot {MY_ID}!")
 
-def drive_from_to(x_from, y_from, rot_from, x_to, y_to, rot_to):
+def drive_to(x_to, y_to, rot_to):
     global X_pos, Y_pos, angle
-    dX = x_to - x_from
-    dY = y_to - y_from
 
-    heading_angle = math.atan2(dX, dY) * 180 / math.pi 
-    heading_angle = (heading_angle + 360) % 360
-    d_Theta = heading_angle - rot_from
-    steer(d_Theta, 250)
-    while(abs(X_pos - x_to) > 0.10 or abs(Y_pos - y_to) > 0.10):
-        drive_forward(500)
+    while(abs(X_pos - x_to) > 0.1 or abs(Y_pos - y_to) > 0.1):
+        dX = x_to - X_pos
+        dY = y_to - Y_pos
+        heading_angle = math.atan2(dX, dY) * 180 / math.pi 
+        heading_angle = (heading_angle + 360) % 360
+        d_Theta = heading_angle - angle
+        if d_Theta > 10:
+            steer(d_Theta, 150)
+        else:
+            drive_forward(500)
         if is_out_of_bounds() or is_close_to_other_robots():
             stop()
             break
@@ -161,7 +163,7 @@ for _ in range(10): # 10 iterations of random walk
     x_to = randint(int(X_lower*100), int(X_upper*100)) / 100
     y_to = randint(int(Y_lower*100), int(Y_upper*100)) / 100
     print(f"Driving to ({x_to}m, {y_to}m)")
-    drive_from_to(X_pos, Y_pos, angle, x_to, y_to, angle)
+    drive_to(x_to, y_to, angle)
     time.sleep(2)
     
 # Stop the MQTT client loop
