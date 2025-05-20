@@ -141,7 +141,7 @@ def control_to(x_to, y_to, dt):
     left_speed = kp * distance + kh * d_Theta
     # set motor speeds
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
-    return distance
+    return distance, d_Theta
 
 
 
@@ -243,8 +243,8 @@ while True:
             distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
             while distance > 0.15:
                 dt = 0.1
-                distance = control_to(runner_x, runner_y, dt)
-                print(f"Chaser {MY_ID} is moving towards the runner. Distance: {distance:.2f}")
+                distance, d_Theta = control_to(runner_x, runner_y, dt)
+                print(f"Chaser {MY_ID} is moving towards the runner. Distance: {distance:.2f}; Deviation: {d_Theta:.2f}º")
                 time.sleep(dt)
 
                 
