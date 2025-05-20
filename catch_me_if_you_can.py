@@ -13,7 +13,7 @@ MY_X = None
 MY_Y = None
 MY_ANGLE = None
 CHASERS_IDS = ["39", "00", "01"]
-RUNNER_ID = "02"
+RUNNER_ID = "44"
 #============== END OF GAME DEFINITIONS ================#
 
 ##============= UTILITY FUNCTIONS =============##
