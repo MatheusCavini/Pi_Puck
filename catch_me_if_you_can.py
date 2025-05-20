@@ -137,8 +137,8 @@ def control_to(x_to, y_to, dt):
 
     d_Theta = heading_angle - MY_ANGLE
     # control motors based on distance and angle
-    right_speed = kp * distance + kh * d_Theta
-    left_speed = kp * distance - kh * d_Theta
+    right_speed = kp * distance - kh * d_Theta
+    left_speed = kp * distance + kh * d_Theta
     # set motor speeds
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance
