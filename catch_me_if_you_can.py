@@ -7,7 +7,7 @@ import math
 
 
 #================= GAME DEFINITIONS ===================#
-msg
+msg = None
 MY_ID = "39"
 MY_X = None
 MY_Y = None
