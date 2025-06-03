@@ -8,11 +8,11 @@ import math
 
 #================= GAME DEFINITIONS ===================#
 msg = None
-MY_ID = "39"
+MY_ID = "14"
 MY_X = None
 MY_Y = None
 MY_ANGLE = None
-CHASERS_IDS = ["39", "00", "01"]
+CHASERS_IDS = ["14", "00", "01"]
 RUNNER_ID = "44"
 #============== END OF GAME DEFINITIONS ================#
 
@@ -143,10 +143,9 @@ def control_to(x_to, y_to, dt):
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance, d_Theta
 
-
-
-
 ##============= END OF UTILITY FUNCTIONS =============##
+
+
 
 ##==================== MQTT SETUP ======================##
 
