@@ -266,17 +266,26 @@ while True:
             runner_y = msg[RUNNER_ID]['position'][1]
             runner_position = (runner_x, runner_y)
             print(f"Chaser {MY_ID} sees runner {RUNNER_ID} at position {runner_position}")
+            distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
+            while distance > 0.20:
 
-            # Compute the potential field at the chaser's position
-            U_func = lambda x, y: compute_potential_field(x, y)
-            grad = compute_gradient(U_func, MY_X, MY_Y)
-            print(f"Chaser {MY_ID} computed gradient: {grad}")
+                # Compute the potential field at the chaser's position
+                U_func = lambda x, y: compute_potential_field(x, y)
+                grad = compute_gradient(U_func, MY_X, MY_Y)
+                print(f"Chaser {MY_ID} computed gradient: {grad}")
 
-            # Control the chaser to a position in the negative directon of the gradient
-            eta = 0.01
-            new_x = MY_X - eta * grad[0]
-            new_y = MY_Y - eta * grad[1]
-            control_to(new_x, new_y, dt=0.1)
+                # Control the chaser to a position in the negative directon of the gradient
+                eta = 0.01
+                new_x = MY_X - eta * grad[0]
+                new_y = MY_Y - eta * grad[1]
+                control_to(new_x, new_y, dt=0.1)
+
+                distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
+
+            print(f"Chaser {MY_ID} caught the runner!")
+            blink_3_times("green")
+            CATCHED_FLAG = True
+            break
 
             
         else:
