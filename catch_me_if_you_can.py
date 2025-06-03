@@ -272,7 +272,7 @@ while True:
             grad = compute_gradient(U_func, MY_X, MY_Y)
 
             # Control the chaser to a position in the negative directon of the gradient
-            eta = 1
+            eta = 0.1
             new_x = MY_X - eta * grad[0]
             new_y = MY_Y - eta * grad[1]
             control_to(new_x, new_y, dt=0.1)
