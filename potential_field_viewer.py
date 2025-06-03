@@ -10,7 +10,7 @@ MY_ID = "32"
 RUNNER_ID = "44"
 
 
-def compute_potential_field(x, y, alpha =20.0, beta =0.1, beta0 = 0.01):
+def compute_potential_field(x, y, alpha =20.0, beta =0.15, beta0 = 0.005):
     global msg
     if msg is None:
         
@@ -118,7 +118,7 @@ while True:
         plt.quiver(MY_X, MY_Y, -eta*grad[0]/np.linalg.norm(grad), -eta*grad[1]/np.linalg.norm(grad), angles='xy', scale_units='xy', scale=1, color='red', label='Gradient Direction')
     plt.legend()
     plt.show()
-    time.sleep(1)
+    time.sleep(0.1)
 
 
 client.loop_stop() 
