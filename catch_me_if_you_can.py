@@ -128,7 +128,7 @@ def drive_to(x_to, y_to, rot_to):
 # Use proportional control to get to a target point
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
-    kp = 500
+    kp = 1000
     kh = 3
     dX = x_to - MY_X
     dY = y_to - MY_Y
@@ -285,7 +285,7 @@ while True:
                 print(f"Chaser {MY_ID} computed gradient: {grad}")
 
                 # Control the chaser to a position in the negative directon of the gradient
-                eta = 0.5
+                eta = 0.1
                 new_x = MY_X - eta * grad[0]/np.linalg.norm(grad)
                 new_y = MY_Y - eta * grad[1]/np.linalg.norm(grad)
                 control_to(new_x, new_y, dt)
