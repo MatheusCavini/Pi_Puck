@@ -10,7 +10,7 @@ MY_ID = "32"
 RUNNER_ID = "44"
 
 
-def compute_potential_field(x, y, alpha =20.0, beta =0.15, beta0 = 0.005):
+def compute_potential_field(x, y, alpha =20.0, beta =0.14, beta0 = 0.01):
     global msg
     if msg is None:
         
@@ -112,6 +112,14 @@ while True:
         Xg = msg[RUNNER_ID]['position'][0]
         Yg = msg[RUNNER_ID]['position'][1]
         plt.scatter(Xg, Yg, color='red', marker='*', s=100, label='Goal')
+    #Display each robot as a circle of radius 0.035
+    if msg is not None:
+        for robot_id, data in msg.items():
+            if data is not None and robot_id != RUNNER_ID:
+                robot_x = data['position'][0]
+                robot_y = data['position'][1]
+                circle = plt.Circle((robot_x, robot_y), 0.035, color='white', fill=True, linewidth=2, label=f'Robot {robot_id}')
+                plt.gca().add_patch(circle)
     # Show the gradient direction at the robot's position
     if 'MY_X' in globals() and MY_X is not None and MY_Y is not None:
         grad = compute_gradient(compute_potential_field, MY_X, MY_Y)
