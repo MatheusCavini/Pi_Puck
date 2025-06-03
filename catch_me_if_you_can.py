@@ -141,6 +141,14 @@ def control_to(x_to, y_to, dt):
     right_speed = kp * distance - kh * d_Theta
     left_speed = kp * distance + kh * d_Theta
     # set motor speeds
+    if right_speed > 1000:
+        right_speed = 1000
+    if left_speed > 1000:
+        left_speed = 1000
+    if right_speed < -1000:
+        right_speed = -1000
+    if left_speed < -1000:
+        left_speed = -1000
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance, d_Theta
 
