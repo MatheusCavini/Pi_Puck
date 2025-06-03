@@ -275,9 +275,9 @@ while True:
                 print(f"Chaser {MY_ID} computed gradient: {grad}")
 
                 # Control the chaser to a position in the negative directon of the gradient
-                eta = 0.03
-                new_x = MY_X - eta * grad[0]
-                new_y = MY_Y - eta * grad[1]
+                eta = 0.3
+                new_x = MY_X - eta * grad[0]/np.linalg.norm(grad)
+                new_y = MY_Y - eta * grad[1]/np.linalg.norm(grad)
                 control_to(new_x, new_y, dt)
 
                 distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
