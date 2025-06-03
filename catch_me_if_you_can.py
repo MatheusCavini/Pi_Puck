@@ -152,7 +152,7 @@ def control_to(x_to, y_to, dt):
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance, d_Theta
 
-def compute_potential_field(x, y, alpha =10.0, beta = 0.3, beta0 = 0.01):
+def compute_potential_field(x, y, alpha =10.0, beta =0.25, beta0 = 0.01):
     global msg
 
     # Get runner positiion as Goal
@@ -170,6 +170,8 @@ def compute_potential_field(x, y, alpha =10.0, beta = 0.3, beta0 = 0.01):
             robot_x = msg[robot_id]['position'][0]
             robot_y = msg[robot_id]['position'][1]
             dist = np.sqrt((x - robot_x)**2 + (y - robot_y)**2)
+            if dist< 0.035:
+                dist = 0.035
             U_obs += beta / (beta0 + dist)
     
     # Return total potential
