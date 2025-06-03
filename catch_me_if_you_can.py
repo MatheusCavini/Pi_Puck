@@ -152,7 +152,7 @@ def control_to(x_to, y_to, dt):
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance, d_Theta
 
-def compute_potential_field(x, y, alpha =15.0, beta =0.35, beta0 = 0.005):
+def compute_potential_field(x, y, alpha =20.0, beta =0.1, beta0 = 0.01):
     global msg
 
     # Get runner positiion as Goal
@@ -177,7 +177,7 @@ def compute_potential_field(x, y, alpha =15.0, beta =0.35, beta0 = 0.005):
     # Return total potential
     return Ug + U_obs
 
-def compute_gradient(U_func, x, y, h=1e-2):
+def compute_gradient(U_func, x, y, h=1e-3):
     dU_dx = (U_func(x + h, y) - U_func(x - h, y)) / (2 * h)
     dU_dy = (U_func(x, y + h) - U_func(x, y - h)) / (2 * h)
     return np.array([dU_dx, dU_dy])
