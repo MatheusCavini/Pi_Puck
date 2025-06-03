@@ -4,6 +4,7 @@ import time
 from pipuck.pipuck import PiPuck
 from random import randint
 import math
+import numpy as np
 
 
 #================= GAME DEFINITIONS ===================#
@@ -127,7 +128,7 @@ def drive_to(x_to, y_to, rot_to):
 # Use proportional control to get to a target point
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
-    kp = 100
+    kp = 5000
     kh = 3
     dX = x_to - MY_X
     dY = y_to - MY_Y
@@ -142,6 +143,34 @@ def control_to(x_to, y_to, dt):
     # set motor speeds
     pipuck.epuck.set_motor_speeds(int(left_speed), int(right_speed))
     return distance, d_Theta
+
+def compute_potential_field(x, y, alpha =10.0, beta = 0.1, beta0 = 0.01):
+    global msg
+
+    # Get runner positiion as Goal
+    if RUNNER_ID in msg and msg[RUNNER_ID] is not None:
+        Xg = msg[RUNNER_ID]['position'][0]
+        Yg = msg[RUNNER_ID]['position'][1]
+
+    # Calculate attractive potential caused by th goal
+    Ug = alpha * ((x - Xg)**2 + (y - Yg)**2)
+
+    # Calculate repulsive potential from any other robots in the arena
+    U_obs = 0.0
+    for robot_id in msg:
+        if robot_id != MY_ID and robot_id != RUNNER_ID and msg[robot_id] is not None:
+            robot_x = msg[robot_id]['position'][0]
+            robot_y = msg[robot_id]['position'][1]
+            dist = np.sqrt((x - robot_x)**2 + (y - robot_y)**2)
+            U_obs += beta / (beta0 + dist)
+    
+    # Return total potential
+    return Ug + U_obs
+
+def compute_gradient(U_func, x, y, h=1e-3):
+    dU_dx = (U_func(x + h, y) - U_func(x - h, y)) / (2 * h)
+    dU_dy = (U_func(x, y + h) - U_func(x, y - h)) / (2 * h)
+    return np.array([dU_dx, dU_dy])
 
 ##============= END OF UTILITY FUNCTIONS =============##
 
@@ -230,27 +259,25 @@ while True:
 
        
     else: #ROLE CHASER
-        # Simple strategy: get runner postion and try to go there
+        # Use potential field navigation to chase the runner
         runner_position = []
         if RUNNER_ID in msg and msg[RUNNER_ID] is not None:
             runner_x = msg[RUNNER_ID]['position'][0]
             runner_y = msg[RUNNER_ID]['position'][1]
-            runner_position.append((runner_x, runner_y))
+            runner_position = (runner_x, runner_y)
             print(f"Chaser {MY_ID} sees runner {RUNNER_ID} at position {runner_position}")
-            
-            # Check if the chaser is close to the runner
-            distance = ((MY_X - runner_x) ** 2 + (MY_Y - runner_y) ** 2) ** 0.5
-            while distance > 0.20:
-                dt = 0.1
-                distance, d_Theta = control_to(runner_x, runner_y, dt)
-                print(f"Chaser {MY_ID} is moving towards the runner. Distance: {distance:.2f}; Deviation: {d_Theta:.2f}º")
-                time.sleep(dt)
 
-                
-            print(f"Chaser {MY_ID} caught the runner!")
-            blink_3_times("green")
-            CATCHED_FLAG = True
-            break
+            # Compute the potential field at the chaser's position
+            U_func = lambda x, y: compute_potential_field(x, y)
+            grad = compute_gradient(U_func, MY_X, MY_Y)
+
+            # Control the chaser to a position in the negative directon of the gradient
+            eta = 1
+            new_x = MY_X - eta * grad[0]
+            new_y = MY_Y - eta * grad[1]
+            control_to(new_x, new_y, dt=0.1)
+
+            
         else:
             print("No runner detected in the arena...")
 
