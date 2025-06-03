@@ -6,11 +6,11 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 msg = None
-MY_ID = "14"
+MY_ID = "32"
 RUNNER_ID = "44"
 
 
-def compute_potential_field(x, y, alpha =15.0, beta =0.35, beta0 = 0.005):
+def compute_potential_field(x, y, alpha =20.0, beta =0.1, beta0 = 0.01):
     global msg
     if msg is None:
         
@@ -38,6 +38,11 @@ def compute_potential_field(x, y, alpha =15.0, beta =0.35, beta0 = 0.005):
     
     # Return total potential
     return Ug + U_obs
+
+def compute_gradient(U_func, x, y, h=1e-3):
+    dU_dx = (U_func(x + h, y) - U_func(x - h, y)) / (2 * h)
+    dU_dy = (U_func(x, y + h) - U_func(x, y - h)) / (2 * h)
+    return np.array([dU_dx, dU_dy])
 
 
 # Define variables and callbacks
@@ -85,6 +90,7 @@ resolution = 200
 x = np.linspace(0, arena_width, resolution)
 y = np.linspace(0, arena_height, resolution)
 X, Y = np.meshgrid(x, y)
+eta = 0.1
 
 while True:
     # compute and execute potential field in all arena points
@@ -92,24 +98,26 @@ while True:
     for i in range(resolution):
         for j in range(resolution):
             Z[i, j] = compute_potential_field(X[i, j], Y[i, j])
-    # Plotting the potential field in 3D
-    fig = plt.figure(figsize=(12, 6))
-    ax = fig.add_subplot(111, projection='3d')
-    surf = ax.plot_surface(X, Y, Z, cmap='viridis', edgecolor='none')
-    fig.colorbar(surf, ax=ax, shrink=0.5, aspect=10, label='Potential Field Value')
-    ax.set_title('Potential Field (3D)')
-    ax.set_xlabel('X (m)')
-    ax.set_ylabel('Y (m)')
-    ax.set_zlabel('Potential')
-    ax.set_xlim(0, arena_width)
-    ax.set_ylim(0, arena_height)
-    #plot goal position
+    # Plotting the potential field in 2D
+    plt.figure(figsize=(12, 6))
+    cp = plt.contourf(X, Y, Z, levels=50, cmap='viridis')
+    plt.colorbar(cp, label='Potential Field Value')
+    plt.title('Potential Field (2D)')
+    plt.xlabel('X (m)')
+    plt.ylabel('Y (m)')
+    plt.xlim(0, arena_width)
+    plt.ylim(0, arena_height)
+    # plot goal position
     if msg is not None and RUNNER_ID in msg and msg[RUNNER_ID] is not None:
         Xg = msg[RUNNER_ID]['position'][0]
         Yg = msg[RUNNER_ID]['position'][1]
-        ax.scatter(Xg, Yg, compute_potential_field(Xg, Yg), color='red', marker='*', s=100, label='Goal')
+        plt.scatter(Xg, Yg, color='red', marker='*', s=100, label='Goal')
+    # Show the gradient direction at the robot's position
+    if 'MY_X' in globals() and MY_X is not None and MY_Y is not None:
+        grad = compute_gradient(compute_potential_field, MY_X, MY_Y)
+        plt.quiver(MY_X, MY_Y, -eta*grad[0]/np.linalg.norm(grad), -eta*grad[1]/np.linalg.norm(grad), angles='xy', scale_units='xy', scale=1, color='red', label='Gradient Direction')
+    plt.legend()
     plt.show()
-
     time.sleep(1)
 
 

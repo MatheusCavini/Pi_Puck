@@ -9,11 +9,11 @@ import numpy as np
 
 #================= GAME DEFINITIONS ===================#
 msg = None
-MY_ID = "14"
+MY_ID = "32"
 MY_X = None
 MY_Y = None
 MY_ANGLE = None
-CHASERS_IDS = ["14", "00", "01"]
+CHASERS_IDS = ["32", "00", "01"]
 RUNNER_ID = "44"
 #============== END OF GAME DEFINITIONS ================#
 
