@@ -129,7 +129,7 @@ def drive_to(x_to, y_to, rot_to):
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
     kp = 1000
-    kh = 8
+    kh = 3
     dX = x_to - MY_X
     dY = y_to - MY_Y
     heading_angle = math.atan2(dX, dY) * 180 / math.pi
