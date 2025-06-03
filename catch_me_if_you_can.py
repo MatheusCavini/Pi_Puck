@@ -128,7 +128,7 @@ def drive_to(x_to, y_to, rot_to):
 # Use proportional control to get to a target point
 def control_to(x_to, y_to, dt):
     global MY_X, MY_Y, MY_ANGLE
-    kp = 5000
+    kp = 500
     kh = 3
     dX = x_to - MY_X
     dY = y_to - MY_Y
