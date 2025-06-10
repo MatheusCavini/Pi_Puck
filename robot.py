@@ -9,6 +9,7 @@ class Robot:
             self.robot = PiPuck(epuck_version=epuck_version,
                                 tof_sensors=tof_sensors,
                                 yrl_expansion=yrl_expansion)
+            self.epuck = self.robot.epuck
         else:
             # For Webots simulated e-puck
             from controller import Robot as WebotsRobot, LED
