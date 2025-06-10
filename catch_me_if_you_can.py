@@ -1,10 +1,32 @@
 import paho.mqtt.client as mqtt
 import json
 import time
-from pipuck.pipuck import PiPuck
+from robot import Robot
 from random import randint
 import math
 import numpy as np
+import os
+
+# ================================= SIMULATION OR REAL ROBOT DEFINITIONS ================================
+SIM_FLAG = True
+if 'WEBOTS_HOME' in os.environ:
+    print("Running in WeBots simulation")
+    SIM_FLAG = True
+else:
+    print("Running on real E-Puck")
+    SIM_FLAG = False
+
+pipuck = Robot(sim = SIM_FLAG)
+
+if SIM_FLAG:
+    from robot import Time
+    time = Time(pipuck)  # Use Webots time in simulation
+else:
+    import time
+
+Broker = "localhost" if SIM_FLAG else "192.168.178.56"  
+
+# ================================= ALWAYS USE AT THE BEGINNING OF THE CODE ================================
 
 
 #================= GAME DEFINITIONS ===================#
@@ -13,7 +35,7 @@ MY_ID = "32"
 MY_X = None
 MY_Y = None
 MY_ANGLE = None
-CHASERS_IDS = ["32", "00", "01"]
+CHASERS_IDS = ["32", "09", "01"]
 RUNNER_ID = "44"
 #============== END OF GAME DEFINITIONS ================#
 
@@ -189,7 +211,6 @@ def compute_gradient(U_func, x, y, h=1e-3):
 ##==================== MQTT SETUP ======================##
 
 # Define variables and callbacks
-Broker = "192.168.178.56"  # Replace with your broker address
 Port = 1883 # standard MQTT port
 
 # function to handle connection
@@ -233,8 +254,6 @@ client.loop_start() # Start listening loop in separate thread
 
 ##================= END OF MQTT SETUP ==================##
 
-# Initialize the PiPuck
-pipuck = PiPuck(epuck_version=2)
 
 ##================== MAIN LOOP ===================##
 CATCHED_FLAG = False
